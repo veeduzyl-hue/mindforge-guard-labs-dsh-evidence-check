@@ -3,22 +3,22 @@ import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
-import {join,resolve,dirname} from 'node:path';
+import {join,resolve,dirname,delimiter} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const version=process.argv[2]||'0.2.1-rc.5';
 assert.equal(version,'0.2.1-rc.5','Only the scoped rc.5 version is permitted');
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const temp=mkdtempSync(join(tmpdir(),'guardlabs-profile-cli-'));
-const consumer=join(temp,'consumer'), packs=join(temp,'packs'),home=join(temp,'home');
-mkdirSync(consumer);mkdirSync(packs);mkdirSync(home);
+const consumer=join(temp,'consumer'), packs=join(temp,'packs'),home=join(temp,'home'),manager=join(temp,'manager');
+mkdirSync(consumer);mkdirSync(packs);mkdirSync(home);mkdirSync(manager);
 const env={...process.env,CI:'true',DSH_HOME:home,DSH_TELEMETRY_DISABLED:'1',
  DSH_TELEMETRY_MODE:'DISABLED',npm_config_update_notifier:'false',
  npm_config_fetch_retries:'2',npm_config_fetch_timeout:'60000'};
 function run(cmd,args,cwd,timeout=1200000){
- const isNpm=cmd==='npm',win=process.platform==='win32';
- const r=spawnSync(win&&isNpm?'npm.cmd':cmd,args,{cwd,env,
-   encoding:'utf8',shell:win&&isNpm,timeout,maxBuffer:24*1024*1024});
+ const isNpm=cmd==='npm',isPnpm=cmd==='pnpm',win=process.platform==='win32';
+ const r=spawnSync(win&&(isNpm||isPnpm)?cmd+'.cmd':cmd,args,{cwd,env,
+   encoding:'utf8',shell:win&&(isNpm||isPnpm),timeout,maxBuffer:24*1024*1024});
  if(r.error||r.status!==0){
    console.error('PROFILE_STEP_FAILED',cmd,args.join(' '),'exit',r.status,
      r.error?.message||'',(r.stdout||'').slice(-4000),(r.stderr||'').slice(-4000));
@@ -36,7 +36,12 @@ try{
  run('npm',['install','--no-audit','--no-fund','--no-progress','--no-save',
    '@deepseek-ai/dsh@'+version,'@deepseek-ai/dsh-tools@'+version],consumer);
  console.log('FRESH_DSH_HOST_INSTALL_PASS',version);
- run('npm',['install','--global','--no-audit','--no-fund','pnpm@10.21.0'],consumer,480000);
+ // Install the package manager in the temporary test root, not into runner-global PATH.
+ run('npm',['install','--prefix',manager,'--no-audit','--no-fund','--no-progress','--no-save','pnpm@10.21.0'],consumer,480000);
+ const pnpmBin=join(manager,'node_modules','.bin');
+ assert.ok(existsSync(join(pnpmBin,process.platform==='win32'?'pnpm.cmd':'pnpm')),'PNPM_COMMAND_MISSING');
+ const pathKey=Object.keys(env).find(key=>key.toLowerCase()==='path')||'PATH';
+ env[pathKey]=pnpmBin+delimiter+(env[pathKey]||'');
  console.log('PROFILE_PNPM_READY',run('pnpm',['--version'],consumer,30000).trim());
  const pkg=JSON.parse(readFileSync(join(consumer,'node_modules','@deepseek-ai','dsh','package.json'),'utf8'));
  assert.equal(pkg.version,version);
