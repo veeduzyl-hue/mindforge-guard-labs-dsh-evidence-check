@@ -1,40 +1,71 @@
-# Evidence Check for DeepSeek Harness — Guard Labs v0.2 private release preparation
+# Evidence Check for DeepSeek Harness
 
-**Status (2026-11-02): MIT LICENSE SELECTED; NOT PUBLIC.** `private:true` / `license: MIT`. This is a staged, independently reviewable candidate, **not** a published/community-market package.
+**See what the evidence supports—not just what an AI agent says happened.**
 
-MindForge Guard Labs supports this independent experimental plugin. It is **not part of MindForge Guard's formal admission, not production assurance, and not a generalized causal correctness guarantee**. The plugin is **synthetic-only**; never submit production logs, customer data, personal information, proprietary code or credentials.
+Evidence Check is a developer-focused, evidence-aware review tool from **MindForge Guard Labs**. It examines structured **synthetic** Claim–Evidence records and produces traceable, bounded findings using a deterministic evaluation engine.
 
-## What the tool does
+[中文说明](README.zh-CN.md) · [Examples](examples/) · [Privacy](docs/PRIVACY.md) · [Security](docs/SECURITY.md)
 
-`review_synthetic_evidence_input` takes one `evidenceJson` string (maximum 32 KiB) containing a user-declared `synthetic:true` structured Claim–Evidence object with a `SYN-*` case ID and synthetic targets. Verdicts, reason and evidence refs are obtained from the exact SHA-256-pinned v0.1.3 deterministic engine `evaluateClaim`, not the model. For unseen inputs, no frozen Golden comparison applies. The only demonstrated new examples are A and B in `examples/`.
+## Why Evidence Check?
 
-The two sample cases intentionally use the same `caseId` but different contents and raw hashes; they are **not** identical inputs. The tool's `inputSha256` hashes the exact JSON *string passed to the tool*; an Agent may serialize semantically equivalent JSON with different byte hashes. Do not claim byte-identical Agent input on that basis.
+Agent workflows can report a successful action while the available records tell a narrower story. A tool response, a before/after snapshot and a coverage claim do not necessarily prove the same thing.
 
-## B-computer release preparation (offline)
+Evidence Check helps developers explore those gaps before relying on an agent's narrative:
 
-The Owner accepted the original A-host local runtime with limitations in OD-001 on 2026-10-30. The B-host private migration and offline verification also passed (Node 24.12.0, 27/27 unit tests, frozen engine A/B preflight). B-host DSH profile boot and independent clean install **have not been verified**.
+- **Evidence-linked conclusions.** Each claim gets a verdict, a written reason and references to the supporting or conflicting records.
+- **Bounded judgments.** Distinguish `SUPPORTED_LIMITED`, `UNVERIFIED` and `CONTRADICTED` instead of collapsing uncertainty into a pass/fail label.
+- **Deterministic review.** A pinned rules engine evaluates the evidence; a language model does not invent the verdict.
+- **Local tool execution.** The plugin itself has no telemetry, automatic uploads or runtime filesystem writes.
+- **Built for experimentation.** Use structured fictional cases to test how agent claims relate to recorded observations.
 
-Run from this separate staging directory (requires Node.js >=22):
+## How it works
 
-```powershell
-node --test .\tests\validate.test.mjs .\tests\reviewer.test.mjs
-node .\scripts\verify-engine.mjs
-node .\scripts\integration-preflight.mjs
-node .\scripts\release-check.mjs  # expected: BLOCKED / nonzero exit
+```text
+Synthetic claims + events + snapshots + coverage
+                      |
+                      v
+        review_synthetic_evidence_input
+                      |
+                      v
+            Pinned evaluation engine
+                      |
+                      v
+     Verdict + reason + evidence references
 ```
 
-The original private B workspace, A-host accepted artifacts and their reports remain unchanged. The original A-host validation did include actual rc.2 DSH Profile/Agent calls, **OWNER_ATTESTED_PASS**, while raw Agent NDJSON streams were recorded but not independently reviewed line by line. Those outcomes must not be restated as B-host or clean-install evidence.
+The DeepSeek Harness tool accepts an `evidenceJson` string (maximum **32 KiB**) containing a declared `synthetic:true` case, a `SYN-*` case ID and synthetic targets. The engine returns bounded conclusions without rewriting the underlying evidence. See [example A](examples/unseen-before-after-A.json) and [example B](examples/unseen-before-after-B.json).
 
-## Privacy and limitations
+**Example outcomes:** an absent post-state can leave a file-creation claim `UNVERIFIED`; a successful synthetic tool event together with bounded before/after observations can support `SUPPORTED_LIMITED`. These are example-specific findings, not universal guarantees.
 
-There is no plugin telemetry, automatic collection, remote upload, runtime filesystem write or model-based verdict. In a DSH conversation, **Harness may send messages/tool arguments to the selected hosted model provider**. `synthetic:true` is user-asserted and not a guarantee of absence of private information. See `docs/PRIVACY.md`, `docs/SECURITY.md`, and `docs/PROVENANCE_AND_ASSURANCE.md`.
+## Explore the project
 
-## License and publication status
+From a source checkout with Node.js 22+:
 
-**Owner decision (2026-11-02): MIT License; Copyright (c) 2026 veeduzyl-hue.** The Owner authorizes MIT for the original/ChatGPT-assisted `src/` and the unchanged frozen engine, as well as the project-owned public README, tests, synthetic examples, documentation, scripts and configuration. The finalized license is in [`LICENSE`](LICENSE); the scope and third-party exclusions are in [`docs/LICENSE_SCOPE.md`](docs/LICENSE_SCOPE.md) and [`NOTICE.md`](NOTICE.md).
+```bash
+npm test
+node scripts/verify-engine.mjs
+node scripts/integration-preflight.mjs
+```
 
-**Important distinction:** Licensing is decided, but **public release is still BLOCKED**. The npm package remains `private:true`, the separate repository has not been created, the exact peer-package notices need review, and independent clean installation / DSH rc.5 compatibility have not been demonstrated. No npm publication, public GitHub push or DSH market submission has occurred.
+The project includes a DSH tool integration and an npm package layout. Compatibility testing has exercised npm-installed DSH rc.2 and rc.5 tool interfaces on Windows and Linux. **End-user DSH Profile installation and full Agent lifecycle are separate integration checks; no general-availability claim is made here.**
 
-## Support and feedback
+## Where it fits
 
-Proposed community feedback is manually submitted and opt-in, with fictional examples only. No logging/feedback ingestion is activated. A private security advisory channel will be defined after an independent repo exists.
+Evidence Check is useful for synthetic agent-workflow experiments, developer education, claim–evidence regression tests and conversations about verifiability. It is **not** an authorization engine, execution gate, production log auditor or independent assurance certification.
+
+### Privacy and trust boundaries
+
+- **Synthetic inputs only.** Do not submit real Agent traces, customer data, proprietary source code, personal information or secrets.
+- The plugin performs local deterministic evaluation, but **DeepSeek Harness may send chat messages and tool arguments to your configured model provider**.
+- A `synthetic:true` declaration is supplied by the user; the plugin cannot independently certify that an input contains no sensitive content.
+- Verdicts are bounded by available evidence and do not establish real-world causation, complete effect coverage or formal MindForge Guard admission.
+
+Read [provenance and assurance boundaries](docs/PROVENANCE_AND_ASSURANCE.md) and [privacy guidance](docs/PRIVACY.md).
+
+## Ecosystem and license
+
+Evidence Check is an **independent MindForge Guard Labs community experiment** built for DeepSeek Harness. It is not a component of the formal MindForge Guard governance product.
+
+**MIT License** · Copyright © 2026 veeduzyl-hue. See [LICENSE](LICENSE) and [third-party dependencies](docs/THIRD_PARTY_DEPENDENCIES.md).
+
+For feedback, use a minimal, human-reviewed **fictional** reproduction; never attach raw sessions or secrets. [Synthetic feedback template](.github/ISSUE_TEMPLATE/synthetic-feedback.yml).
