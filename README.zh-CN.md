@@ -1,30 +1,70 @@
-# Guard Labs — DSH 合成证据核查 v0.2 私有发布准备候选
+# Evidence Check for DeepSeek Harness
 
-**状态：已选定 MIT 许可并署名 veeduzyl-hue；但仍未公开，`private:true`；不得直接推送公共仓库或发布 npm。**
+**让智能体的结论回到证据：看清记录实际支持什么，而不只是听它声称做了什么。**
 
-这是由 MindForge Guard Labs 品牌支持的独立社区实验插件，不是正式 Guard 组件，不构成真实证据 assurance、因果验证或生产安全认证。
+**Evidence Check** 是 **MindForge Guard Labs** 面向开发者的证据审阅实验工具。它分析结构化的**合成 Claim–Evidence（主张—证据）记录**，通过确定性评估引擎输出可追溯、有限定条件的判断。
 
-`review_synthetic_evidence_input` 只接受一个 `evidenceJson` 字符串（最大 32KiB），必须是用户自行声明的合成 Claim–Evidence JSON，`synthetic:true`、`SYN-*` 案例编号和 `synthetic://` 目标。由 SHA-256 锁定的冻结 v0.1.3 引擎计算 verdict/reason/evidenceRefs，而不是让大模型重新判定。新案例**不与旧 Golden Report 比对**。
+[English](README.md) · [合成示例](examples/) · [隐私说明](docs/PRIVACY.md) · [安全说明](docs/SECURITY.md)
 
-## 当前已验证的事项
+## 为什么需要 Evidence Check？
 
-- A 电脑：OD-001 于 2026-10-30 限定接受 v0.2 本地运行；rc.2 独立 Profile / Agent A、B 是 Owner 证明的 PASS，原始事件 NDJSON 已记录但未逐行独立审阅。
-- B 电脑：私有迁移、27/27 测试、冻结引擎校验和新 A/B 结果通过；**B 电脑 DSH 完整运行时和干净安装尚未验证**。
-- 示例 A=`UNVERIFIED`，B=`SUPPORTED_LIMITED`。示例共用 `caseId` 但内容哈希不同；Agent 传入的紧凑 JSON 可以语义等价而非原始文件字节相同。
+智能体可能报告“任务成功”，但工具响应、执行前后快照及覆盖范围记录所能证明的事实并不总是一致。**执行记录不等于结果证据，结果证据也不自动等于完整授权或因果证明。**
 
-## B 电脑离线验证
+Evidence Check 帮助开发者在合成场景中检验这些差异：
 
-```powershell
-node --test .\tests\validate.test.mjs .\tests\reviewer.test.mjs
-node .\scripts\verify-engine.mjs
-node .\scripts\integration-preflight.mjs
-node .\scripts\release-check.mjs  # 预期阻断；退出码非零
+- **结论关联证据。** 每项主张返回判定、理由及相应的证据引用。
+- **不确定性可见。** 区分 `SUPPORTED_LIMITED`（有限支持）、`UNVERIFIED`（未能核实）与 `CONTRADICTED`（证据矛盾）。
+- **确定性判断。** 由受 SHA-256 固定的规则引擎计算结论，而不是由大模型自由生成。
+- **本地工具逻辑。** 插件自身不包含遥测、自动上传或运行时文件写入。
+- **开发者可实验。** 使用虚构的工具事件、快照和覆盖信息，分析智能体主张与记录的关系。
+
+## 工作方式
+
+```text
+合成主张 + 工具事件 + 状态快照 + 覆盖记录
+                      ↓
+       review_synthetic_evidence_input
+                      ↓
+               确定性评估引擎
+                      ↓
+            判定 + 理由 + 证据引用
 ```
 
-## IP、隐私及发布
+DeepSeek Harness 工具接受一个 `evidenceJson` 字符串（最大 **32 KiB**），要求声明 `synthetic:true`、使用 `SYN-*` 案例编号和合成目标。可查看[示例 A](examples/unseen-before-after-A.json)与[示例 B](examples/unseen-before-after-B.json)。
 
-**2026-11-02 Owner 已正式决定：MIT License；Copyright (c) 2026 veeduzyl-hue。** 授权范围包括 `src/`、原始字节不变的冻结引擎，以及拟公开的项目自有 README、测试、合成示例、文档、脚本和配置。正式 `LICENSE` 已放在候选目录，范围与第三方排除项见 `docs/LICENSE_SCOPE.md`、`NOTICE.md`。虽然 License 已确认，`private:true`、Peer 包具体许可复核、B 电脑干净安装、rc.5 兼容性、独立仓库与市场提交等关口仍未关闭；**公开发布继续 BLOCKED**。
+**示例：** 如果执行后记录显示目标不存在，文件创建主张可能保持 `UNVERIFIED`；如果合成工具成功事件及有限的前后观察相互支持，可能得到 `SUPPORTED_LIMITED`。这些是针对特定证据的结论，不代表所有场景都能正确识别。
 
-插件自身不自动上传、采集、记录真实证据；但在 DSH 聊天中提交给托管模型的文本与工具参数仍可能到达模型提供商。请勿提供真实日志、源码、凭据、客户和个人数据。
+## 快速探索
 
-`PUBLIC_RELEASE=BLOCKED`；`FORMAL_GUARD_ADMISSION=NOT_PERFORMED`。
+从项目源码目录运行（Node.js 22+）：
+
+```bash
+npm test
+node scripts/verify-engine.mjs
+node scripts/integration-preflight.mjs
+```
+
+项目提供 DeepSeek Harness 工具集成与 npm 打包结构。Windows/Linux 环境已测试基于 npm 安装的 DSH rc.2 / rc.5 工具接口。**普通用户的 DSH Profile 安装与完整 Agent 生命周期仍需单独验证，不能由此推定全面可用。**
+
+## 适合哪些场景？
+
+适用于合成 Agent 工作流实验、开发者培训、Claim–Evidence 回归测试、证据可核查性研究等。
+
+本工具**不是**执行授权系统、运行时拦截器、生产日志审计系统，也不提供正式的独立 assurance 认证。
+
+### 隐私及信任边界
+
+- **仅支持合成数据。** 请勿提交真实 Agent 日志、客户数据、专有源码、个人信息或凭据。
+- 插件在本地执行确定性分析，但 **DeepSeek Harness 可能将聊天消息及工具参数发送给配置的模型提供商**。
+- `synthetic:true` 是用户声明，不能独立证明数据不含敏感内容。
+- 结论受实际记录范围限制，不证明真实世界的因果关系、完整副作用覆盖或 MindForge Guard 正式准入。
+
+进一步阅读：[证据来源与保证边界](docs/PROVENANCE_AND_ASSURANCE.md)、[隐私说明](docs/PRIVACY.md)。
+
+## 项目生态与许可
+
+Evidence Check 是由 **MindForge Guard Labs** 支持、面向 DeepSeek Harness 的**独立社区实验项目**，不属于 MindForge Guard 正式治理产品的组件。
+
+**MIT License** · Copyright © 2026 veeduzyl-hue。详见 [LICENSE](LICENSE) 和[第三方依赖说明](docs/THIRD_PARTY_DEPENDENCIES.md)。
+
+反馈请使用经过人工审核的最小**虚构**复现案例，不要附加原始会话或密钥。[合成反馈模板](.github/ISSUE_TEMPLATE/synthetic-feedback.yml)。
