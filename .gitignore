@@ -1,0 +1,14 @@
+node_modules/
+*.log
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+.DS_Store
+*.tgz
+.npm/
+release-local/
+__pycache__/
+# Only curated release-prep source is present here. Never merge a private evidence directory.

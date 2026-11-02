@@ -1,0 +1,45 @@
+{
+  "name": "dsh-guard-labs-evidence-check",
+  "version": "0.2.0-beta.1",
+  "description": "MindForge Guard Labs experimental synthetic Claim–Evidence reviewer for DeepSeek Harness; local-read-only tool with no telemetry.",
+  "type": "module",
+  "main": "./src/plugin.mjs",
+  "exports": "./src/plugin.mjs",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=22",
+    "dsh": ">=0.2.1-rc.2 <0.3.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "^0.2.1-rc.2"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "files": [
+    "src",
+    "baseline/engine/analyze.mjs",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh-CN.md",
+    "docs/PRIVACY.md",
+    "docs/SECURITY.md",
+    "docs/PROVENANCE_AND_ASSURANCE.md",
+    "docs/THIRD_PARTY_DEPENDENCIES.md",
+    "LICENSE",
+    "NOTICE.md",
+    "docs/LICENSE_SCOPE.md"
+  ],
+  "scripts": {
+    "test": "node --test tests/validate.test.mjs tests/reviewer.test.mjs tests/manifest-git-worktree.test.mjs",
+    "check": "node --check src/plugin.mjs && node --test tests/validate.test.mjs tests/reviewer.test.mjs tests/manifest-git-worktree.test.mjs",
+    "preflight": "node scripts/integration-preflight.mjs",
+    "engine:verify": "node scripts/verify-engine.mjs",
+    "release:check": "node scripts/release-check.mjs",
+    "manifest:verify": "node scripts/verify-release-manifest.mjs"
+  },
+  "author": "veeduzyl-hue"
+}
