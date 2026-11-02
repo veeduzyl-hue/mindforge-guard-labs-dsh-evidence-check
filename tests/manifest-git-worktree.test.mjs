@@ -1,7 +1,7 @@
 // Regression tests for the strict release inventory in Git and non-Git workspaces.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync} from 'node:fs';
+import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
@@ -71,6 +71,11 @@ test('modified tracked content fails its SHA-256 check',()=>{
 });
 test('missing declared file fails closed',()=>{
   const root=fixture();
-  rmSync(join(root,'LICENSE'));
+  // Use a never-created path rather than relying on Windows temp-file deletion.
+  const missingName='NEVER_CREATED_SYNTHETIC_FILE.txt';
+  assert.equal(existsSync(join(root,missingName)),false,'missing fixture must be absent');
+  const manifestPath=join(root,'SHA256SUMS.txt');
+  const existing=readFileSync(manifestPath,'utf8');
+  writeFileSync(manifestPath,existing+`${hash(Buffer.from('absent fixture'))}  ${missingName}\n`);
   fails(root,'UNSAFE_FILE_TARGET|ENOENT');
 });
