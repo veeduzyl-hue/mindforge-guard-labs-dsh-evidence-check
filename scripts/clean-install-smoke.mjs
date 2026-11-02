@@ -16,11 +16,13 @@ const consumer = join(temp, 'consumer');
 mkdirSync(packDir);
 mkdirSync(consumer);
 
-function run(cmd, args, cwd, timeout = 600000) {
+function run(cmd, args, cwd, timeout = 600000, inheritOutput = false) {
   const windows = process.platform === 'win32';
   const result = spawnSync(windows && cmd === 'npm' ? 'npm.cmd' : cmd, args, {
     cwd, encoding: 'utf8', timeout, shell: windows && cmd === 'npm',
-    env: { ...process.env, CI: 'true', DSH_TELEMETRY_DISABLED: '1', npm_config_update_notifier: 'false' },
+    stdio: inheritOutput ? 'inherit' : 'pipe',
+    env: { ...process.env, CI: 'true', DSH_TELEMETRY_DISABLED: '1', npm_config_update_notifier: 'false',
+      npm_config_fetch_retries: '2', npm_config_fetch_timeout: '60000' },
     maxBuffer: 12 * 1024 * 1024,
   });
   if (result.error || result.status !== 0) {
@@ -28,7 +30,7 @@ function run(cmd, args, cwd, timeout = 600000) {
       result.error?.message || '', (result.stdout || '').slice(-5000), (result.stderr || '').slice(-5000));
     throw new Error('CHILD_COMMAND_FAILED');
   }
-  return result.stdout;
+  return result.stdout || '';
 }
 
 try {
@@ -50,7 +52,8 @@ try {
     name: 'isolated-guardlabs-consumer', version: '0.0.0', private: true, type: 'module'
   }));
   run('npm', ['install', '--no-audit', '--no-fund', '--no-progress', '--no-save',
-    `@deepseek-ai/dsh@${version}`, `@deepseek-ai/dsh-tools@${version}`, tarball], consumer);
+    `@deepseek-ai/dsh@${version}`, `@deepseek-ai/dsh-tools@${version}`, tarball], consumer,
+    process.platform === 'win32' ? 1080000 : 600000, true);
   console.log('FRESH_NPM_INSTALL_PASS', version);
 
   const child = String.raw`import assert from 'node:assert/strict';
