@@ -45,6 +45,15 @@ dsh --profile web --dump-config
 
 重启测试 Profile，使用 `review_synthetic_evidence_input`，仅提交**合成 JSON**。Windows/Linux 的 rc.5 官方安装与配置已验证；真实模型 rc.5 Agent 端到端和生产 assurance 尚未建立。GitHub Beta 是首个分发渠道，npm 和社区收录单独推进。
 
+
+### 通过 DSH 自定义插件索引发现
+
+在 DSH 实验插件中启用 **Custom plugin indexes**，进入 **Discover → Add index source**，输入：
+
+`https://raw.githubusercontent.com/veeduzyl-hue/mindforge-guard-labs-dsh-evidence-check/main/plugin-index.json`
+
+安装前核对 Git 固定提交。本索引由项目自行维护，**不代表第三方市场审核或官方推荐**。
+
 ## 快速探索
 
 从项目源码目录运行（Node.js 22+）：
