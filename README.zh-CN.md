@@ -34,6 +34,17 @@ DeepSeek Harness 工具接受一个 `evidenceJson` 字符串（最大 **32 KiB**
 
 **示例：** 如果执行后记录显示目标不存在，文件创建主张可能保持 `UNVERIFIED`；如果合成工具成功事件及有限的前后观察相互支持，可能得到 `SUPPORTED_LIMITED`。这些是针对特定证据的结论，不代表所有场景都能正确识别。
 
+## 安装社区实验 Beta
+
+请使用独立的、不含真实凭据的 DSH 测试 Profile；建议 Node.js 24、DSH rc.5 和 pnpm。下载 [GitHub Beta Release](https://github.com/veeduzyl-hue/mindforge-guard-labs-dsh-evidence-check/releases/tag/v0.2.0-beta.1) 的 `.tgz` 和 `.tgz.sha256`，核验文件后执行：
+
+```sh
+dsh plugin --profile web add ./dsh-guard-labs-evidence-check-0.2.0-beta.1.tgz
+dsh --profile web --dump-config
+```
+
+重启测试 Profile，使用 `review_synthetic_evidence_input`，仅提交**合成 JSON**。Windows/Linux 的 rc.5 官方安装与配置已验证；真实模型 rc.5 Agent 端到端和生产 assurance 尚未建立。GitHub Beta 是首个分发渠道，npm 和社区收录单独推进。
+
 ## 快速探索
 
 从项目源码目录运行（Node.js 22+）：
@@ -44,7 +55,7 @@ node scripts/verify-engine.mjs
 node scripts/integration-preflight.mjs
 ```
 
-项目提供 DeepSeek Harness 工具集成与 npm 打包结构。Windows/Linux 环境已测试基于 npm 安装的 DSH rc.2 / rc.5 工具接口。**普通用户的 DSH Profile 安装与完整 Agent 生命周期仍需单独验证，不能由此推定全面可用。**
+项目提供 DeepSeek Harness 工具集成与 npm 打包结构。Windows/Linux 已验证 rc.2/rc.5 npm 包工具调用和 rc.5 官方 Profile CLI 安装配置；真实模型 Agent 生命周期仍未验收。
 
 ## 适合哪些场景？
 

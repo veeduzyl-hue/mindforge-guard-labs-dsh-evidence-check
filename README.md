@@ -37,6 +37,18 @@ The DeepSeek Harness tool accepts an `evidenceJson` string (maximum **32 KiB**) 
 
 **Example outcomes:** an absent post-state can leave a file-creation claim `UNVERIFIED`; a successful synthetic tool event together with bounded before/after observations can support `SUPPORTED_LIMITED`. These are example-specific findings, not universal guarantees.
 
+## Install the experimental community beta
+
+Use an isolated, credential-free DSH test Profile; Node.js 24, DSH rc.5 and pnpm are recommended.
+Download the `.tgz` and `.tgz.sha256` assets from the [GitHub beta release](https://github.com/veeduzyl-hue/mindforge-guard-labs-dsh-evidence-check/releases/tag/v0.2.0-beta.1). Verify the archive hash before installing.
+
+```sh
+dsh plugin --profile web add ./dsh-guard-labs-evidence-check-0.2.0-beta.1.tgz
+dsh --profile web --dump-config
+```
+
+Restart the isolated Profile and use `review_synthetic_evidence_input` with **synthetic JSON only**. Official CLI installation and configuration on Windows/Linux passed for rc.5; live-model rc.5 Agent use and production assurance remain unverified. GitHub beta is the first distribution channel; npm registry and community listing are separate.
+
 ## Explore the project
 
 From a source checkout with Node.js 22+:
@@ -47,7 +59,7 @@ node scripts/verify-engine.mjs
 node scripts/integration-preflight.mjs
 ```
 
-The project includes a DSH tool integration and an npm package layout. Compatibility testing has exercised npm-installed DSH rc.2 and rc.5 tool interfaces on Windows and Linux. **End-user DSH Profile installation and full Agent lifecycle are separate integration checks; no general-availability claim is made here.**
+The project includes a DSH tool integration and an npm package layout. Compatibility testing covers DSH rc.2/rc.5 npm tool execution and official rc.5 Profile CLI installation/configuration on Windows and Linux. Live Agent rc.5 is not certified.
 
 ## Where it fits
 

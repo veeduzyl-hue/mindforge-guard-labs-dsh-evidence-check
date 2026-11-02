@@ -1,4 +1,4 @@
-# Security boundary — experimental candidate
+# Security boundary — experimental beta
 
 - Scope: synthetic JSON text, 32 KiB maximum. No arbitrary file paths, URLs or command strings in the tool contract.
 - Input is user-declared synthetic; false declarations, hidden secrets and malicious prose cannot be fully detected by this code.
@@ -8,8 +8,8 @@
 - Outputs verdicts verbatim from the evaluator, with reason and in-fixture evidenceRefs. No LLM adjudication.
 - Tool code has no network, subprocesses, telemetry client, or write calls. This does not prevent the DSH Host from writing its own session metadata.
 - An in-process plugin shares privileges with its Host. SHA-256 checks detect known file substitution; they do not constitute host sandboxing or prevent TOCTOU.
-- Original A-host rc.2 isolated DSH Profile and Agent A/B were OWNER_ATTESTED_PASS in OD-001; raw events remain RECORDED_NOT_INDEPENDENTLY_REVIEWED. A separate B-host clean installation and rc.5 check are still required before beta release.
+- rc.2 live Agent A/B was Owner-attested with raw-event review limits. Windows/Linux rc.2/rc.5 tarball tool testing and rc.5 Profile CLI/config testing passed. A live-model rc.5 Agent session and production protection remain unverified.
 - No raw logs, Guard canonical schemas, EAK verification, production access, independent assurance, or Guard admission.
 - `D6_GENERALIZED_SEMANTICS=HOLD`, `T6_EXPECTATION_CHANGE=NOT_AUTHORIZED`, `PAIRED_MATRIX_PROVENANCE=PARTIAL_NOT_CERTIFIED`.
 
-Security reports: use the eventual repository's private security advisory mechanism when available; do not publish secrets or exploitable cases in a public issue. A dedicated reporting channel is pending repository creation.
+Report vulnerabilities privately through repository security reporting when available; never publish real logs or secrets in a public issue.
