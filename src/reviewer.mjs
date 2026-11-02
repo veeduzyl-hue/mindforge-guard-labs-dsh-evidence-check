@@ -38,7 +38,7 @@ export function createReviewer(analyzeFixtureData, options={}) {
       return {id:c.id,kind:data.claims[index].kind,text:data.claims[index].text,target:data.claims[index].target,verdict:c.status,reason:c.reason,evidenceRefs:c.evidenceRefs};
     });
     return {
-      tool:'review_synthetic_evidence_input', toolVersion:'0.2.0-beta.1',
+      tool:'review_synthetic_evidence_input', toolVersion:'0.2.0-beta.2',
       syntheticOnly:true, syntheticDeclaration:'USER_ASSERTED_NOT_INDEPENDENTLY_PROVEN',
       verdictSource:'FROZEN_DETERMINISTIC_ENGINE', formalGuardAdmission:'NOT_PERFORMED',
       caseId:data.caseId, inputSha256:sha256(Buffer.from(evidenceJson,'utf8')),

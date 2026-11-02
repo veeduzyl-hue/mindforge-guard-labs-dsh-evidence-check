@@ -11,6 +11,10 @@ const fakeAnalyzer = data=>({claims:data.claims.map(c=>({
  reason:'Probe evaluator, not accepted engine evidence', evidenceRefs:['E1','B1','A1']
 }))});
 const review=createReviewer(fakeAnalyzer);
+test('toolVersion agrees with npm package version',()=>{
+  const p=JSON.parse(readFileSync(new URL('../package.json',import.meta.url),'utf8'));
+  assert.equal(review(A).toolVersion,p.version);
+});
 test('wrapper calls injected evaluator for new input A and preserves verdict',()=>assert.equal(review(A).claims[0].verdict,'UNVERIFIED'));
 test('new input B changes verdict when evidence changes (probe only)',()=>assert.equal(review(B).claims[0].verdict,'SUPPORTED_LIMITED'));
 test('new inputs are not compared to frozen Golden',()=>assert.equal(review(A).goldenComparison.applicable,false));
