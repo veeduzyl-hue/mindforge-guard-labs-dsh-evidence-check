@@ -1,0 +1,41 @@
+name: Synthetic case feedback (no real traces)
+description: Voluntary feedback with a minimal, human-reviewed, synthetic reproduction. No proprietary code or logs.
+title: "[synthetic] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: "Do NOT attach real Agent logs, proprietary source code, personal information, credentials, session exports, or API keys. Only synthetic examples you are authorized to disclose. The maintainers do not automatically collect tool outputs."
+  - type: checkboxes
+    id: reviewed
+    attributes:
+      label: Publication review
+      options:
+        - label: I confirm this report contains no real logs, personal data, secrets, or confidential code and can be published publicly.
+          required: true
+  - type: dropdown
+    id: issue-kind
+    attributes:
+      label: Problem category
+      options: [Unexpected verdict, Missing evidence reference, Input rejection, Installation or compatibility, UX or documentation, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: minimal-repro
+    attributes:
+      label: Minimal fictional reproduction (optional)
+      description: Use invented synthetic targets and invented events. Do not paste a real session.
+    validations:
+      required: false
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour and why
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behaviour and limitations
+    validations:
+      required: true

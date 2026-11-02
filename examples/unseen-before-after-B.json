@@ -1,0 +1,11 @@
+{
+  "synthetic": true,
+  "caseId": "SYN-UNSEEN-01",
+  "description": "Same synthetic event as A, but after observation shows the new target exists",
+  "claims": [{"id":"C1","kind":"target_created","text":"The target report was created","target":"synthetic://project/report.md"}],
+  "events": [{"id":"E1","tool":"write","target":"synthetic://project/report.md","status":"success","at":"2026-10-30T00:00:00Z"}],
+  "snapshots": [
+    {"id":"B1","target":"synthetic://project/report.md","phase":"before","exists":false},
+    {"id":"A1","target":"synthetic://project/report.md","phase":"after","exists":true}
+  ]
+}
