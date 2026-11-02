@@ -1,8 +1,6 @@
 name: npm Trusted Publishing
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       version:
@@ -24,10 +22,7 @@ concurrency:
 
 jobs:
   publish:
-    if: >-
-      github.ref == 'refs/heads/main' &&
-      ((github.event_name == 'workflow_dispatch' && inputs.confirmation == 'PUBLISH_BETA') ||
-       (github.event_name == 'push' && contains(github.event.head_commit.message, '[oidc-publish-beta.2]')))
+    if: github.ref == 'refs/heads/main' && inputs.confirmation == 'PUBLISH_BETA'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -43,7 +38,7 @@ jobs:
           package-manager-cache: false
       - name: Verify package version and release boundaries
         env:
-          REQUESTED_VERSION: ${{ inputs.version || '0.2.0-beta.2' }}
+          REQUESTED_VERSION: ${{ inputs.version }}
         shell: bash
         run: |
           set -euo pipefail
@@ -64,7 +59,7 @@ jobs:
           node scripts/integration-preflight.mjs
       - name: Verify npm version does not exist
         env:
-          REQUESTED_VERSION: ${{ inputs.version || '0.2.0-beta.2' }}
+          REQUESTED_VERSION: ${{ inputs.version }}
         shell: bash
         run: |
           set -euo pipefail
@@ -98,9 +93,20 @@ jobs:
         run: npm publish --tag beta --access public --provenance
       - name: Confirm exact beta on public registry
         env:
-          REQUESTED_VERSION: ${{ inputs.version || '0.2.0-beta.2' }}
+          REQUESTED_VERSION: ${{ inputs.version }}
         shell: bash
         run: |
           set -euo pipefail
-          npm view "dsh-guard-labs-evidence-check@$REQUESTED_VERSION" version --registry=https://registry.npmjs.org/ --prefer-online
-          echo 'NPM_TRUSTED_PUBLISH_COMMAND_COMPLETED'
+          # npm may process uploaded packages asynchronously; wait for registry visibility.
+          # Use independent caches to avoid stale negative responses; never republish.
+          for attempt in $(seq 1 30); do
+            visible="$(npm view "dsh-guard-labs-evidence-check@$REQUESTED_VERSION" version --registry=https://registry.npmjs.org/ --cache "$RUNNER_TEMP/npm-verify-$attempt" --prefer-online 2>/dev/null || true)"
+            if [ "$visible" = "$REQUESTED_VERSION" ]; then
+              echo "NPM_TRUSTED_PUBLISH_PUBLICLY_VISIBLE=$REQUESTED_VERSION"
+              exit 0
+            fi
+            echo "NPM_REGISTRY_PROCESSING_ATTEMPT=$attempt"
+            sleep 20
+          done
+          echo 'NPM_PUBLIC_VISIBILITY_NOT_CONFIRMED'
+          exit 1
