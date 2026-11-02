@@ -79,7 +79,7 @@ for (const [variant, expectedVerdict] of [['A','UNVERIFIED'],['B','SUPPORTED_LIM
   assert.equal(result.claims[0].verdict,expectedVerdict);
   assert.deepEqual(result.claims[0].evidenceRefs,['E1','B1','A1']);
   assert.equal(result.verdictSource,'FROZEN_DETERMINISTIC_ENGINE');
-  console.log('INSTALLED_UPSTREAM_TYPED_TOOL_DISPATSH_PASS', requested,variant, expectedVerdict);
+  console.log('INSTALLED_UPSTREAM_TYPED_TOOL_DISPATCH_PASS', requested,variant, expectedVerdict);
 }
 console.log('PACKAGE_LICENSE_METADATA',JSON.stringify({dsh:dshPackage.license??null,tools:toolsPackage.license??null}));
 `;
@@ -88,7 +88,7 @@ console.log('PACKAGE_LICENSE_METADATA',JSON.stringify({dsh:dshPackage.license??n
     const source = readFileSync(join(root,'examples',`unseen-before-after-${variant}.json`));
     writeFileSync(join(consumer,`input-${variant}.json`),source);
   }
-  const childOut = run(process.execpath, ['smoke.mjs',version],consumer,120000);
+  const childOut = run(process.execPath, ['smoke.mjs',version],consumer,120000);
   console.log(childOut.trim());
   console.log('CLEAN_INSTALL_AND_TYPED_TOOL_SMOKE_PASS',version,process.platform);
 } finally {
