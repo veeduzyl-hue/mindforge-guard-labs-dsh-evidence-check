@@ -1,0 +1,101 @@
+name: npm Trusted Publishing
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Existing package.json version to publish (new beta only)'
+        required: true
+        type: string
+      confirmation:
+        description: 'Type PUBLISH_BETA to authorize a public npm release'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-publish-beta
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main' && inputs.confirmation == 'PUBLISH_BETA'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Node.js 24 with public npm registry
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+      - name: Verify package version and release boundaries
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
+          const requested=process.env.REQUESTED_VERSION;
+          if(pkg.name!=='dsh-guard-labs-evidence-check'||pkg.version!==requested)throw Error('VERSION_OR_NAME_MISMATCH');
+          if(!/^0\.2\.0-beta\.[1-9][0-9]*$/.test(requested)||requested==='0.2.0-beta.1')throw Error('REQUIRES_NEW_BETA_VERSION');
+          if(pkg.private!==false||pkg.license!=='MIT')throw Error('PACKAGE_RELEASE_POLICY_FAILED');
+          if(pkg.repository?.url!=='git+https://github.com/veeduzyl-hue/mindforge-guard-labs-dsh-evidence-check.git')throw Error('REPOSITORY_BINDING_FAILED');
+          if(!pkg.dsh?.bundle?.patch)throw Error('DSH_BUNDLE_MANIFEST_MISSING');
+          console.log('TRUSTED_BETA_METADATA_PASS',requested);
+          NODE
+          node scripts/verify-release-manifest.mjs
+          npm test
+          node scripts/verify-engine.mjs
+          node scripts/integration-preflight.mjs
+      - name: Verify npm version does not exist
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(curl -L -sS -o /dev/null -w '%{http_code}' "https://registry.npmjs.org/dsh-guard-labs-evidence-check/$REQUESTED_VERSION")"
+          if [ "$status" != "404" ]; then
+            echo "VERSION_NOT_AVAILABLE_OR_REGISTRY_ERROR=$status"
+            exit 1
+          fi
+          echo 'NPM_NEW_VERSION_CONFIRMED'
+      - name: Audit public tarball
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm pack --json > pack.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const [p]=JSON.parse(fs.readFileSync('pack.json','utf8'));
+          const names=p.files.map(f=>f.path);
+          for(const required of ['LICENSE','package.json','src/plugin.mjs','baseline/engine/analyze.mjs','cordis.patch.yml']){
+            if(!names.includes(required))throw Error('REQUIRED_FILE_MISSING:'+required);
+          }
+          for(const name of names){
+            if(/(^|\/)(dev|tests|examples|\.github|node_modules|credentials|evidence)(\/|$)|\.(?:ndjson|log)$/i.test(name))
+              throw Error('PRIVATE_FILE_IN_PACKAGE:'+name);
+          }
+          console.log('PUBLIC_TARBALL_AUDIT_PASS',p.filename,names.length);
+          NODE
+          rm -f pack.json
+      - name: Publish via npm OIDC Trusted Publisher
+        shell: bash
+        run: npm publish --tag beta --access public --provenance
+      - name: Confirm exact beta on public registry
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm view "dsh-guard-labs-evidence-check@$REQUESTED_VERSION" version --registry=https://registry.npmjs.org/ --prefer-online
+          echo 'NPM_TRUSTED_PUBLISH_COMMAND_COMPLETED'
