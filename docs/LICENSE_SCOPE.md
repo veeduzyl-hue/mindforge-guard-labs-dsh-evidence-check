@@ -1,4 +1,4 @@
-# License scope and Owner authorization (R2)
+# License scope and Owner authorization
 
 **Decision:** Owner-selected MIT License, 2026-11-02. **Copyright holder:** `veeduzyl-hue`.
 
@@ -16,4 +16,4 @@ The Owner attested the original or ChatGPT-assisted development of `src/` and th
 - Formal MindForge Guard product code, canonical schemas, restricted governance documents, archived experiment evidence, raw Agent event streams, credentials, user data and other private files not intentionally included.
 - Production assurance, independent verification or permission to market this plugin as an official DeepSeek product.
 
-**Distribution state:** `package.json` remains `private:true`; this R2 package is for controlled internal release preparation. Public repository creation, package publication and marketplace submission need separate gates.
+**Distribution state:** MIT-licensed source is public; GitHub experimental beta is permitted. npm registry publication and marketplace acceptance are separate.

@@ -5,7 +5,7 @@
   "type": "module",
   "main": "./src/plugin.mjs",
   "exports": "./src/plugin.mjs",
-  "private": true,
+  "private": false,
   "license": "MIT",
   "engines": {
     "node": ">=22",
@@ -41,5 +41,24 @@
     "release:check": "node scripts/release-check.mjs",
     "manifest:verify": "node scripts/verify-release-manifest.mjs"
   },
-  "author": "veeduzyl-hue"
+  "author": "veeduzyl-hue",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/veeduzyl-hue/mindforge-guard-labs-dsh-evidence-check.git"
+  },
+  "homepage": "https://github.com/veeduzyl-hue/mindforge-guard-labs-dsh-evidence-check#readme",
+  "bugs": {
+    "url": "https://github.com/veeduzyl-hue/mindforge-guard-labs-dsh-evidence-check/issues"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "synthetic-evidence",
+    "ai-agents",
+    "deterministic-review"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "tag": "beta"
+  }
 }

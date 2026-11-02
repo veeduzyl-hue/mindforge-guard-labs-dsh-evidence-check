@@ -1,0 +1,45 @@
+name: Publish GitHub experimental beta
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  prerelease:
+    if: github.repository == 'veeduzyl-hue/mindforge-guard-labs-dsh-evidence-check' && contains(github.event.head_commit.message, '[publish-beta-0.2.0]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+      - name: Verify manifest, engine and tests
+        run: |
+          node scripts/verify-release-manifest.mjs
+          npm test
+          node scripts/verify-engine.mjs
+          node scripts/integration-preflight.mjs
+          node -e "const p=require('./package.json');if(p.name!=='dsh-guard-labs-evidence-check'||p.version!=='0.2.0-beta.1'||p.private!==false||p.license!=='MIT')process.exit(1)"
+      - name: Build and audit npm tarball
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm pack --json --pack-destination "$RUNNER_TEMP" > "$RUNNER_TEMP/pack.json"
+          node -e "const p=require(process.argv[1])[0];const n=p.files.map(x=>x.path);for(const x of ['package.json','LICENSE','src/plugin.mjs','baseline/engine/analyze.mjs','cordis.patch.yml'])if(!n.includes(x))throw Error('MISSING:'+x);for(const x of n)if(/(^|\/)(dev|tests|examples|\.github|node_modules|evidence|credentials)(\/|$)|\.(ndjson|log)$/.test(x))throw Error('PRIVATE_FILE:'+x);if(p.filename!=='dsh-guard-labs-evidence-check-0.2.0-beta.1.tgz')throw Error('NAME_MISMATCH');console.log('AUDITED_TARBALL',n.length)" "$RUNNER_TEMP/pack.json"
+          cd "$RUNNER_TEMP"
+          sha256sum dsh-guard-labs-evidence-check-0.2.0-beta.1.tgz > dsh-guard-labs-evidence-check-0.2.0-beta.1.tgz.sha256
+          sha256sum -c dsh-guard-labs-evidence-check-0.2.0-beta.1.tgz.sha256
+      - name: Publish one GitHub prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag=v0.2.0-beta.1
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo RELEASE_ALREADY_EXISTS_NO_OVERWRITE
+            exit 0
+          fi
+          gh release create "$tag" "$RUNNER_TEMP/dsh-guard-labs-evidence-check-0.2.0-beta.1.tgz" "$RUNNER_TEMP/dsh-guard-labs-evidence-check-0.2.0-beta.1.tgz.sha256" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Evidence Check v0.2.0-beta.1 — Experimental Community Beta" --notes "Synthetic-only deterministic claim-evidence review for DSH. Windows/Linux rc.2/rc.5 tool compatibility and rc.5 Profile CLI installation were tested. Live Agent rc.5 and production assurance are not established. No real logs, secrets or customer data. MIT (c) 2026 veeduzyl-hue." --prerelease
+          echo GITHUB_EXPERIMENTAL_BETA_PUBLISHED
