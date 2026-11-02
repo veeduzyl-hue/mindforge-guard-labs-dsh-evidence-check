@@ -23,6 +23,13 @@ function walk(dir){
  for(const e of readdirSync(dir,{withFileTypes:true})){
    const path=resolve(dir,e.name);
    if(e.isSymbolicLink())throw Error('UNEXPECTED_SYMLINK:'+path);
+   // A Git checkout adds its own metadata outside the published source inventory.
+   // Ignore only the root .git entry (directory or worktree gitdir pointer file).
+   // Nested .git entries and all other unlisted files remain inventory violations.
+   if(dir===root && e.name==='.git') {
+     if(!e.isDirectory() && !e.isFile())throw Error('UNEXPECTED_GIT_METADATA_ENTRY:'+path);
+     continue;
+   }
    if(e.isDirectory()) names.push(...walk(path));
    else if(e.isFile()){const name=relative(root,path).split(sep).join('/');if(name!=='SHA256SUMS.txt')names.push(name);}
    else throw Error('UNEXPECTED_ENTRY:'+path);

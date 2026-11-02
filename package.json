@@ -34,8 +34,8 @@
     "docs/LICENSE_SCOPE.md"
   ],
   "scripts": {
-    "test": "node --test tests/validate.test.mjs tests/reviewer.test.mjs",
-    "check": "node --check src/plugin.mjs && node --test tests/validate.test.mjs tests/reviewer.test.mjs",
+    "test": "node --test tests/validate.test.mjs tests/reviewer.test.mjs tests/manifest-git-worktree.test.mjs",
+    "check": "node --check src/plugin.mjs && node --test tests/validate.test.mjs tests/reviewer.test.mjs tests/manifest-git-worktree.test.mjs",
     "preflight": "node scripts/integration-preflight.mjs",
     "engine:verify": "node scripts/verify-engine.mjs",
     "release:check": "node scripts/release-check.mjs",

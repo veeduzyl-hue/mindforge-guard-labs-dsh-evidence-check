@@ -1,4 +1,4 @@
-# Guard Labs v0.2 — Release preparation gates (R2, 2026-11-02)
+# Guard Labs v0.2 — Release preparation gates (R3 manifest fix, 2026-11-02)
 
 **NO PUBLIC RELEASE.** This is separate from the immutable accepted A-host v0.2 candidate and B-host private migration.
 
@@ -10,10 +10,14 @@
 | G3 Clean distribution | Local pack dry-run only; fresh install in independent environment remains | BLOCKED |
 | G4 Security/privacy | Code/manifest review and synthetic-only boundaries; no independent runtime interceptor or production audit | PARTIAL |
 | G5 License/IP | Owner selected MIT for project-owned release scope; copyright (c) 2026 veeduzyl-hue; finalized LICENSE/NOTICE present. Exact third-party peer artifact license and separate publication gates still pending | OWNER_LICENSE_APPROVED__PEER_REVIEW_PENDING |
-| G6 Independent repo | Not created; no public commit or tag | NOT_CREATED |
+| G6 Independent repo | Private repository `veeduzyl-hue/mindforge-guard-labs-dsh-evidence-check`; R2 sources independently verified at commit `b2261b701b400eee055e43c373ee43f6d54ff373`; no public release or tag | PRIVATE_REPO_VERIFIED__NO_PUBLIC_RELEASE |
 | G7 Market | No market listing, no published pinned index | NOT_SUBMITTED |
 | G8 Feedback | Voluntary text-only synthetic issue template; no automatic collection | DESIGN_ONLY |
 
 Preserve `RAW_TOOL_EVENTS=RECORDED_NOT_INDEPENDENTLY_REVIEWED`, `FORMAL_GUARD_ADMISSION=NOT_PERFORMED`, `D6_GENERALIZED_SEMANTICS=HOLD`, `PAIRED_MATRIX_PROVENANCE=PARTIAL_NOT_CERTIFIED`, and `STAGE3_CORDIS_PLUGIN=NOT_AUTHORIZED`.
 
 **The `npm pack` local contents check, if it passes, does not mean a clean installation passed, nor that publishing is permitted.**
+
+## R3-only engineering change
+
+The release inventory verifier ignores **only** the root `.git` metadata entry (directory or Git worktree pointer file) so strict manifest verification also works inside an actual Git checkout. All other paths and bytes remain checked. Regression tests cover Git checkout, non-Git workspace, unexpected files, nested `.git`, tampering, and missing entries. `src/` and frozen engine bytes are unchanged. `PUBLIC_RELEASE=BLOCKED`.
