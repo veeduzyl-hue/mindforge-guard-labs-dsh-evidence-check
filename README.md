@@ -49,6 +49,15 @@ dsh --profile web --dump-config
 
 Restart the isolated Profile and use `review_synthetic_evidence_input` with **synthetic JSON only**. Official CLI installation and configuration on Windows/Linux passed for rc.5; live-model rc.5 Agent use and production assurance remain unverified. GitHub beta is the first distribution channel; npm registry and community listing are separate.
 
+
+### Discover through a DSH custom plugin index
+
+In DSH, enable **Custom plugin indexes** (experimental), open **Discover → Add index source**, and enter:
+
+`https://raw.githubusercontent.com/veeduzyl-hue/mindforge-guard-labs-dsh-evidence-check/main/plugin-index.json`
+
+Review the pinned Git commit before confirming installation. This is a **project-hosted index**, not a third-party market endorsement.
+
 ## Explore the project
 
 From a source checkout with Node.js 22+:
