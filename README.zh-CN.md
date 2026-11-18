@@ -1,16 +1,18 @@
-# Evidence Check for DeepSeek Harness
+# MindForge Guard Labs — Agent Claim–Evidence Review
 
-**让智能体的结论回到证据：看清记录实际支持什么，而不只是听它声称做了什么。**
+**智能体主张—证据审阅：让结论回到证据，看清记录实际支持什么，而不只是听它声称做了什么。**
 
-**Evidence Check** 是 **MindForge Guard Labs** 面向开发者的证据审阅实验工具。它分析结构化的**合成 Claim–Evidence（主张—证据）记录**，通过确定性评估引擎输出可追溯、有限定条件的判断。
+**Agent Claim–Evidence Review（智能体主张—证据审阅）** 是 **MindForge Guard Labs** 面向开发者的实验工具（插件包名：`dsh-guard-labs-evidence-check`）。它针对结构化的**合成 AI Agent 主张**，关联分析工具事件、状态快照、覆盖记录和授权记录，通过确定性评估引擎输出可追溯、有限定条件的判断。
+
+本工具定位于 **Agent 证据审阅**，不是法律诉讼证据清单检查器、执行拦截器或正式 assurance 服务。
 
 [English](README.md) · [合成示例](examples/) · [隐私说明](docs/PRIVACY.md) · [安全说明](docs/SECURITY.md)
 
-## 为什么需要 Evidence Check？
+## 为什么需要 Agent Claim–Evidence Review？
 
 智能体可能报告“任务成功”，但工具响应、执行前后快照及覆盖范围记录所能证明的事实并不总是一致。**执行记录不等于结果证据，结果证据也不自动等于完整授权或因果证明。**
 
-Evidence Check 帮助开发者在合成场景中检验这些差异：
+Agent Claim–Evidence Review 帮助开发者在合成场景中检验这些差异：
 
 - **结论关联证据。** 每项主张返回判定、理由及相应的证据引用。
 - **不确定性可见。** 区分 `SUPPORTED_LIMITED`（有限支持）、`UNVERIFIED`（未能核实）与 `CONTRADICTED`（证据矛盾）。
