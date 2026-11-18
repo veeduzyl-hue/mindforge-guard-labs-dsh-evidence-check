@@ -1,16 +1,16 @@
-# Evidence Check for DeepSeek Harness
+# MindForge Guard Labs — Agent Claim–Evidence Review
 
-**See what the evidence supports—not just what an AI agent says happened.**
+**Review what an AI agent's claims are supported by—not just what it says happened.**
 
-Evidence Check is a developer-focused, evidence-aware review tool from **MindForge Guard Labs**. It examines structured **synthetic** Claim–Evidence records and produces traceable, bounded findings using a deterministic evaluation engine.
+**Agent Claim–Evidence Review** (Evidence Check) is a developer-facing experimental tool from **MindForge Guard Labs**. It deterministically reviews user-declared **synthetic AI-agent claims** against structured events, before/after snapshots, coverage, authorization and policy records, returning bounded verdicts with reasons and evidence references.
 
 [中文说明](README.zh-CN.md) · [Examples](examples/) · [Privacy](docs/PRIVACY.md) · [Security](docs/SECURITY.md)
 
-## Why Evidence Check?
+## Why Agent Claim–Evidence Review?
 
 Agent workflows can report a successful action while the available records tell a narrower story. A tool response, a before/after snapshot and a coverage claim do not necessarily prove the same thing.
 
-Evidence Check helps developers explore those gaps before relying on an agent's narrative:
+Agent Claim–Evidence Review helps developers examine those gaps before relying on an agent's narrative:
 
 - **Evidence-linked conclusions.** Each claim gets a verdict, a written reason and references to the supporting or conflicting records.
 - **Bounded judgments.** Distinguish `SUPPORTED_LIMITED`, `UNVERIFIED` and `CONTRADICTED` instead of collapsing uncertainty into a pass/fail label.
@@ -21,7 +21,7 @@ Evidence Check helps developers explore those gaps before relying on an agent's 
 ## How it works
 
 ```text
-Synthetic claims + events + snapshots + coverage
+Synthetic claims + events + snapshots + coverage + authorization + policy
                       |
                       v
         review_synthetic_evidence_input
@@ -72,7 +72,7 @@ The project includes a DSH tool integration and an npm package layout. Compatibi
 
 ## Where it fits
 
-Evidence Check is useful for synthetic agent-workflow experiments, developer education, claim–evidence regression tests and conversations about verifiability. It is **not** an authorization engine, execution gate, production log auditor or independent assurance certification.
+Agent Claim–Evidence Review is useful for synthetic agent-workflow experiments, developer education, claim–evidence regression tests and verifiability research. It is an AI-agent claim reviewer—not a legal case-file evidence checklist, authorization engine, execution gate, production log auditor or independent assurance certification.
 
 ### Privacy and trust boundaries
 
@@ -85,7 +85,7 @@ Read [provenance and assurance boundaries](docs/PROVENANCE_AND_ASSURANCE.md) and
 
 ## Ecosystem and license
 
-Evidence Check is an **independent MindForge Guard Labs community experiment** built for DeepSeek Harness. It is not a component of the formal MindForge Guard governance product.
+The plugin is an **independent MindForge Guard Labs community experiment** built for DeepSeek Harness. It is not a component of the formal MindForge Guard governance product.
 
 **MIT License** · Copyright © 2026 veeduzyl-hue. See [LICENSE](LICENSE) and [third-party dependencies](docs/THIRD_PARTY_DEPENDENCIES.md).
 
