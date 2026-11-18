@@ -1,16 +1,16 @@
-# Evidence Check for DeepSeek Harness
+# MindForge Guard Labs — Agent Claim–Evidence Review
 
-**让智能体的结论回到证据：看清记录实际支持什么，而不只是听它声称做了什么。**
+**Agent 主张—证据审阅：看清记录实际支持什么，而不只是听它声称做了什么。**
 
-**Evidence Check** 是 **MindForge Guard Labs** 面向开发者的证据审阅实验工具。它分析结构化的**合成 Claim–Evidence（主张—证据）记录**，通过确定性评估引擎输出可追溯、有限定条件的判断。
+**Agent Claim–Evidence Review**（Evidence Check）是 **MindForge Guard Labs** 面向开发者的实验性工具。它对用户声明的**合成 AI Agent 主张**与结构化事件、前后状态快照、覆盖记录、授权及策略快照进行确定性审阅，输出带理由和证据引用的有限判定。
 
 [English](README.md) · [合成示例](examples/) · [隐私说明](docs/PRIVACY.md) · [安全说明](docs/SECURITY.md)
 
-## 为什么需要 Evidence Check？
+## 为什么需要 Agent Claim–Evidence Review？
 
 智能体可能报告“任务成功”，但工具响应、执行前后快照及覆盖范围记录所能证明的事实并不总是一致。**执行记录不等于结果证据，结果证据也不自动等于完整授权或因果证明。**
 
-Evidence Check 帮助开发者在合成场景中检验这些差异：
+Agent Claim–Evidence Review 帮助开发者在合成场景中检验这些差异：
 
 - **结论关联证据。** 每项主张返回判定、理由及相应的证据引用。
 - **不确定性可见。** 区分 `SUPPORTED_LIMITED`（有限支持）、`UNVERIFIED`（未能核实）与 `CONTRADICTED`（证据矛盾）。
@@ -21,7 +21,7 @@ Evidence Check 帮助开发者在合成场景中检验这些差异：
 ## 工作方式
 
 ```text
-合成主张 + 工具事件 + 状态快照 + 覆盖记录
+合成主张 + 工具事件 + 状态快照 + 覆盖记录 + 授权 + 策略快照
                       ↓
        review_synthetic_evidence_input
                       ↓
@@ -68,9 +68,9 @@ node scripts/integration-preflight.mjs
 
 ## 适合哪些场景？
 
-适用于合成 Agent 工作流实验、开发者培训、Claim–Evidence 回归测试、证据可核查性研究等。
+适用于合成 Agent 工作流实验、开发者培训、Claim–Evidence 回归测试和证据可核查性研究。它聚焦 AI Agent 的主张—证据关系，不是法律诉讼证据清单检查，也不审计真实生产日志。
 
-本工具**不是**执行授权系统、运行时拦截器、生产日志审计系统，也不提供正式的独立 assurance 认证。
+本工具**不是**执行授权系统、运行时拦截器或正式的独立 assurance 认证。
 
 ### 隐私及信任边界
 
@@ -83,7 +83,7 @@ node scripts/integration-preflight.mjs
 
 ## 项目生态与许可
 
-Evidence Check 是由 **MindForge Guard Labs** 支持、面向 DeepSeek Harness 的**独立社区实验项目**，不属于 MindForge Guard 正式治理产品的组件。
+本插件是由 **MindForge Guard Labs** 支持、面向 DeepSeek Harness 的**独立社区实验项目**，不属于 MindForge Guard 正式治理产品的组件。
 
 **MIT License** · Copyright © 2026 veeduzyl-hue。详见 [LICENSE](LICENSE) 和[第三方依赖说明](docs/THIRD_PARTY_DEPENDENCIES.md)。
 
