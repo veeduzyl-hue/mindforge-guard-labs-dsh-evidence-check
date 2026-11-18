@@ -5,19 +5,19 @@
     "zh": "MindForge Guard Labs 实验插件"
   },
   "description": {
-    "en": "Synthetic evidence review experiments for DeepSeek Harness.",
-    "zh": "面向 DeepSeek Harness 的合成证据审阅实验。"
+    "en": "Agent claim–evidence review experiments for DeepSeek Harness using synthetic workflow evidence.",
+    "zh": "面向 DeepSeek Harness 的合成 AI Agent 主张—证据审阅实验。"
   },
   "plugins": [
     {
       "name": "dsh-guard-labs-evidence-check",
       "title": {
-        "en": "Evidence Check",
-        "zh": "证据核查"
+        "en": "Agent Claim–Evidence Review",
+        "zh": "Agent 主张—证据审阅"
       },
       "description": {
-        "en": "Deterministic, evidence-linked review of user-declared synthetic AI-agent claims.",
-        "zh": "对用户声明的合成智能体主张进行确定性证据审阅，输出有限判定与证据引用。"
+        "en": "Deterministic review of user-declared synthetic AI-agent claims against structured events, snapshots, authorization, policy and coverage records; returns bounded verdicts with reasons and evidence references.",
+        "zh": "对用户声明的合成 AI Agent 主张进行确定性审阅，结合事件、状态快照、授权、策略及覆盖记录，输出有限判定、理由和证据引用。"
       },
       "author": "veeduzyl-hue",
       "homepage": "https://github.com/veeduzyl-hue/mindforge-guard-labs-dsh-evidence-check#readme",
